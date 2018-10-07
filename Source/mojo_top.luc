@@ -64,9 +64,35 @@ module mojo_top (
     
     //the last 2 digits of the centre leds will be used to display the result of full adder, sum and cout.
     io_led = {8h00,c{6x{0}, cout, sum}, c{io_dip[0][7], 4x{0}, io_dip[0][0+:3]}};
-    a = 0;
-    b = 0;
-    cin = 0;
+    
+    //connect the value of a, b, cin to the right most three switches for manual testing
+    a = io_dip[0][0];
+    b = io_dip[0][1];
+    cin = io_dip[0][2];
+    
+    //when the 8th switch is turned on, the mojo will enter manual test mode.
+    //The code below defines different test cases for manual tests.
+    if (io_dip[0][7] == 1){
+      if ((io_dip[0][0] == 0 & io_dip[0][1] == 0 & io_dip[0][2] == 0)&(sum == 0 & cout == 0)){
+        seg.values = {5d14, 5d11, 5d5, 5d5};//display "PASS"
+      }else if ((io_dip[0][0] == 0 & io_dip[0][1] == 0 & io_dip[0][2] == 1)&(sum == 1 & cout == 0)){
+        seg.values = {5d14, 5d11, 5d5, 5d5};
+      }else if ((io_dip[0][0] == 0 & io_dip[0][1] == 1 & io_dip[0][2] == 0)&(sum == 1 & cout == 0)){
+        seg.values = {5d14, 5d11, 5d5, 5d5};
+      }else if ((io_dip[0][0] == 0 & io_dip[0][1] == 1 & io_dip[0][2] == 1)&(sum == 0 & cout == 1)){
+        seg.values = {5d14, 5d11, 5d5, 5d5};
+      }else if ((io_dip[0][0] == 1 & io_dip[0][1] == 0 & io_dip[0][2] == 0)&(sum == 1 & cout == 0)){
+        seg.values = {5d14, 5d11, 5d5, 5d5};
+      }else if ((io_dip[0][0] == 1 & io_dip[0][1] == 0 & io_dip[0][2] == 1)&(sum == 0 & cout == 1)){
+        seg.values = {5d14, 5d11, 5d5, 5d5};
+      }else if ((io_dip[0][0] == 1 & io_dip[0][1] == 1 & io_dip[0][2] == 0)&(sum == 0 & cout == 1)){
+        seg.values = {5d14, 5d11, 5d5, 5d5};
+      }else if ((io_dip[0][0] == 1 & io_dip[0][1] == 1 & io_dip[0][2] == 1)&(sum == 1 & cout == 1)){
+        seg.values = {5d14, 5d11, 5d5, 5d5};
+      }else {
+        seg.values = {5d10,5d11,5d12,5d13};// display "FAIL"
+      }
+    }
     
     //we use case statements to define the response for different states in the stae machine
     case (state.q) {
